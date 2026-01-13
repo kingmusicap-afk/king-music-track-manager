@@ -854,9 +854,15 @@
 
         async function loadAlbums() {
             try {
-                const response = await fetch(`${API_URL}/albums/list`);
+                const response = await fetch(`${API_URL}/albums.list`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
                 if (!response.ok) throw new Error('Failed to load albums');
-                albums = await response.json();
+                const data = await response.json();
+                // Extract albums from tRPC response format
+                albums = data.result?.data || data.data || data || [];
                 renderAudio();
             } catch (error) {
                 console.error('Error loading albums:', error);
@@ -962,8 +968,8 @@
             }
 
             try {
-                // Create album
-                const albumResponse = await fetch(`${API_URL}/albums/create`, {
+                // Create album using tRPC
+                const albumResponse = await fetch(`${API_URL}/albums.create`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -972,8 +978,6 @@
                         artist,
                         year: parseInt(year),
                         coverImageUrl,
-                        price: parseFloat(price),
-                        isLocked,
                         isVisible: 1
                     })
                 });
@@ -1111,7 +1115,7 @@
             if (!confirm('Delete this album and all its tracks?')) return;
 
             try {
-                const response = await fetch(`${API_URL}/albums/delete`, {
+                const response = await fetch(`${API_URL}/albums.delete`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id: albumId })
