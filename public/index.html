@@ -988,12 +988,14 @@
                     method: 'POST',
                     headers: headers,
                     body: JSON.stringify({
-                        id,
-                        title,
-                        artist,
-                        year: parseInt(year),
-                        coverImageUrl,
-                        isVisible: 1
+                        json: {
+                            id,
+                            title,
+                            artist,
+                            year: parseInt(year),
+                            coverImageUrl,
+                            isVisible: 1
+                        }
                     })
                 });
 
@@ -1002,17 +1004,19 @@
                 // Create songs
                 for (let i = 0; i < currentTracks.length; i++) {
                     const track = currentTracks[i];
-                    await fetch(`${API_URL}/songs/create`, {
+                    await fetch(`${API_URL}/songs.create`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: headers,
                         body: JSON.stringify({
-                            id: `${id}_song_${i + 1}`,
-                            albumId: id,
-                            title: track.title,
-                            artist: artist,
-                            duration: parseInt(track.duration),
-                            audioFileName: track.audioFileName,
-                            trackNumber: i + 1
+                            json: {
+                                id: `${id}_song_${i + 1}`,
+                                albumId: id,
+                                title: track.title,
+                                artist: artist,
+                                duration: parseInt(track.duration),
+                                audioFileName: track.audioFileName,
+                                trackNumber: i + 1
+                            }
                         })
                     });
                 }
