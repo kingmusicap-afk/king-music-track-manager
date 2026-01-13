@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>King Music - Track Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0f1e2e 0%, #1a3a5c 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0f1e2e 0%, #1a3a5c 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .login-section {
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .login-section h2 {
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+
+        .login-btn,
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: #d4af37;
+            color: #1a3a5c;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .login-btn:hover,
+        .btn-primary:hover {
+            background: #e6c547;
+            transform: translateY(-2px);
+        }
+
+        .dashboard {
+            display: none;
+        }
+
+        .dashboard.active {
+            display: block;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .dashboard-header h2 {
+            color: #333;
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .logout-btn:hover {
+            background: #ff5252;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f0f0f0;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #999;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            color: #d4af37;
+            border-bottom-color: #d4af37;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .form-section h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .tracks-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .track-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #d4af37;
+        }
+
+        .track-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .track-header h4 {
+            color: #333;
+            margin: 0;
+        }
+
+        .btn-remove-track {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .btn-remove-track:hover {
+            background: #ff5252;
+        }
+
+        .btn-add-track {
+            background: #51cf66;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+
+        .btn-add-track:hover {
+            background: #40c057;
+        }
+
+        .error {
+            background: #ffe0e0;
+            color: #c92a2a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            border-left: 4px solid #ff6b6b;
+            font-weight: 600;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .success {
+            background: #e7f5ff;
+            color: #1971c2;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            border-left: 4px solid #1971c2;
+        }
+
+        .success.show {
+            display: block;
+        }
+
+        .list-section {
+            margin-top: 30px;
+        }
+
+        .list-section h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .item-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border-left: 4px solid #d4af37;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .item-info h4 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .item-info p {
+            color: #666;
+            font-size: 14px;
+            margin: 3px 0;
+        }
+
+        .item-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        .badge-audio {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .badge-video {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .badge-album {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .badge-track {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .album-tracks {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .album-track-item {
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-edit {
+            background: #4c6ef5;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #364fc7;
+        }
+
+        .btn-delete {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #ff5252;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #d4af37;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .item-header {
+                flex-direction: column;
+            }
+
+            .item-actions {
+                width: 100%;
+            }
+
+            .item-actions button {
+                flex: 1;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎵 King Music - Track Manager</h1>
+            <p>Manage Audio & Video Content</p>
+        </div>
+
+        <div class="content">
+            <!-- Login Section -->
+            <div class="login-section" id="loginSection">
+                <h2>Admin Login</h2>
+                <div class="error" id="loginError"></div>
+                <div class="form-group">
+                    <label for="password">Admin Password</label>
+                    <input type="password" id="password" placeholder="Enter admin password" />
+                </div>
+                <button class="login-btn" onclick="handleLogin()">Login</button>
+            </div>
+
+            <!-- Dashboard Section -->
+            <div class="dashboard" id="dashboard">
+                <div class="dashboard-header">
+                    <h2>Content Manager</h2>
+                    <button class="logout-btn" onclick="handleLogout()">Logout</button>
+                </div>
+
+                <div class="error" id="dashboardError"></div>
+                <div class="success" id="successMessage"></div>
+
+                <!-- Tabs -->
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('audio')">🎵 Audio</button>
+                    <button class="tab-btn" onclick="switchTab('video')">🎬 Video</button>
+                </div>
+
+                <!-- Audio Tab -->
+                <div class="tab-content active" id="audio-tab">
+                    <!-- Audio Type Selection -->
+                    <div class="form-section">
+                        <h3>Add Audio Content</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="audioType">Type</label>
+                                <select id="audioType" onchange="updateAudioForm()">
+                                    <option value="">Select Type</option>
+                                    <option value="album">Album (Multiple Tracks)</option>
+                                    <option value="track">Track (Single Track)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Album Form -->
+                        <div id="albumForm" style="display: none;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="albumId">Album ID (unique)</label>
+                                    <input type="text" id="albumId" placeholder="e.g., album_papa_eternel" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="albumTitle">Album Title</label>
+                                    <input type="text" id="albumTitle" placeholder="e.g., Papa Eternel" />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="albumArtist">Artist Name</label>
+                                    <input type="text" id="albumArtist" placeholder="e.g., King" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="albumYear">Year</label>
+                                    <input type="number" id="albumYear" placeholder="e.g., 2024" />
+                                </div>
+                            </div>
+                            <div class="form-row full">
+                                <div class="form-group">
+                                    <label for="albumCover">Artwork URL</label>
+                                    <input type="url" id="albumCover" placeholder="https://example.com/cover.jpg" />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="albumPrice">Price</label>
+                                    <input type="number" id="albumPrice" placeholder="e.g., 9.99" step="0.01" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Lock Status</label>
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="albumLocked" />
+                                        <label for="albumLocked" style="margin: 0; font-weight: 400;">🔒 Locked (requires unlock code)</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tracks Container -->
+                            <div class="tracks-container" id="tracksContainer">
+                                <h4 style="margin-bottom: 15px; color: #333;">Album Tracks (Up to 12)</h4>
+                                <div id="tracksList"></div>
+                                <button class="btn-add-track" onclick="addTrackField()" id="addTrackBtn">+ Add Track</button>
+                            </div>
+
+                            <button class="btn-primary" onclick="createAlbum()" style="margin-top: 20px;">Create Album</button>
+                        </div>
+
+                        <!-- Track Form -->
+                        <div id="trackForm" style="display: none;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="singleTrackId">Track ID (unique)</label>
+                                    <input type="text" id="singleTrackId" placeholder="e.g., song_1" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="singleTrackTitle">Song Title</label>
+                                    <input type="text" id="singleTrackTitle" placeholder="e.g., Papa Eternel" />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="singleTrackArtist">Artist Name</label>
+                                    <input type="text" id="singleTrackArtist" placeholder="e.g., King" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="singleTrackDuration">Duration (seconds)</label>
+                                    <input type="number" id="singleTrackDuration" placeholder="e.g., 263" />
+                                </div>
+                            </div>
+                            <div class="form-row full">
+                                <div class="form-group">
+                                    <label for="singleTrackAudioFile">Audio File Name (R2)</label>
+                                    <input type="text" id="singleTrackAudioFile" placeholder="e.g., Papa Eternel/Papa eternel.mp3" />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="singleTrackPrice">Price</label>
+                                    <input type="number" id="singleTrackPrice" placeholder="e.g., 9.99" step="0.01" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Lock Status</label>
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="singleTrackLocked" />
+                                        <label for="singleTrackLocked" style="margin: 0; font-weight: 400;">🔒 Locked (requires unlock code)</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn-primary" onclick="createSingleTrack()">Add Track</button>
+                        </div>
+                    </div>
+
+                    <!-- Audio List -->
+                    <div class="list-section">
+                        <h3>Audio Content</h3>
+                        <div id="audioList">
+                            <div class="empty-state">
+                                <div class="loading"></div>
+                                <p>Loading...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Tab -->
+                <div class="tab-content" id="video-tab">
+                    <div class="form-section">
+                        <h3>Add Video Content</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="videoId">Video ID (unique)</label>
+                                <input type="text" id="videoId" placeholder="e.g., video_1" />
+                            </div>
+                            <div class="form-group">
+                                <label for="videoTitle">Video Title</label>
+                                <input type="text" id="videoTitle" placeholder="e.g., Music Video" />
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="videoArtist">Artist Name</label>
+                                <input type="text" id="videoArtist" placeholder="e.g., King" />
+                            </div>
+                            <div class="form-group">
+                                <label for="videoYear">Year</label>
+                                <input type="number" id="videoYear" placeholder="e.g., 2024" />
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label for="videoCover">Artwork URL</label>
+                                <input type="url" id="videoCover" placeholder="https://example.com/thumbnail.jpg" />
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label for="videoUrl">Video URL (Vimeo/YouTube)</label>
+                                <input type="url" id="videoUrl" placeholder="https://vimeo.com/1148754094" />
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="videoPrice">Price</label>
+                                <input type="number" id="videoPrice" placeholder="e.g., 9.99" step="0.01" />
+                            </div>
+                            <div class="form-group">
+                                <label>Lock Status</label>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="videoLocked" />
+                                    <label for="videoLocked" style="margin: 0; font-weight: 400;">🔒 Locked (requires unlock code)</label>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn-primary" onclick="createVideo()">Add Video</button>
+                    </div>
+
+                    <!-- Video List -->
+                    <div class="list-section">
+                        <h3>Video Content</h3>
+                        <div id="videoList">
+                            <div class="empty-state">
+                                <div class="loading"></div>
+                                <p>Loading...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const ADMIN_PASSWORD = 'king2024';
+        const API_URL = 'http://127.0.0.1:3000/api'; // Backend API
+        const MAX_TRACKS = 12;
+
+        // State
+        let isAuthenticated = false;
+        let albums = [];
+        let songs = [];
+        let videos = [];
+        let currentTracks = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+        });
+
+        // Authentication
+        function handleLogin() {
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('loginError');
+
+            if (!password) {
+                showError('loginError', 'Please enter a password');
+                return;
+            }
+
+            if (password === ADMIN_PASSWORD) {
+                isAuthenticated = true;
+                localStorage.setItem('trackManagerAuth', 'true');
+                showDashboard();
+                loadData();
+                errorDiv.classList.remove('show');
+            } else {
+                showError('loginError', 'Invalid password');
+            }
+        }
+
+        function handleLogout() {
+            isAuthenticated = false;
+            localStorage.removeItem('trackManagerAuth');
+            showLogin();
+            document.getElementById('password').value = '';
+        }
+
+        function checkAuth() {
+            if (localStorage.getItem('trackManagerAuth') === 'true') {
+                isAuthenticated = true;
+                showDashboard();
+                loadData();
+            } else {
+                showLogin();
+            }
+        }
+
+        function showLogin() {
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('dashboard').classList.remove('active');
+        }
+
+        function showDashboard() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('dashboard').classList.add('active');
+        }
+
+        // Tab Switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Audio Form Toggle
+        function updateAudioForm() {
+            const type = document.getElementById('audioType').value;
+            document.getElementById('albumForm').style.display = type === 'album' ? 'block' : 'none';
+            document.getElementById('trackForm').style.display = type === 'track' ? 'block' : 'none';
+            
+            if (type === 'album') {
+                currentTracks = [];
+                renderTracksList();
+            }
+        }
+
+        // Track Management
+        function addTrackField() {
+            if (currentTracks.length >= MAX_TRACKS) {
+                showError('dashboardError', `Maximum ${MAX_TRACKS} tracks allowed per album`);
+                return;
+            }
+
+            currentTracks.push({
+                number: currentTracks.length + 1,
+                title: '',
+                duration: '',
+                audioFileName: ''
+            });
+
+            renderTracksList();
+        }
+
+        function removeTrackField(index) {
+            currentTracks.splice(index, 1);
+            currentTracks.forEach((track, i) => {
+                track.number = i + 1;
+            });
+            renderTracksList();
+        }
+
+        function renderTracksList() {
+            const tracksList = document.getElementById('tracksList');
+            
+            if (currentTracks.length === 0) {
+                tracksList.innerHTML = '<p style="color: #999; text-align: center;">No tracks added yet</p>';
+                document.getElementById('addTrackBtn').textContent = `+ Add Track (0/${MAX_TRACKS})`;
+                return;
+            }
+
+            tracksList.innerHTML = currentTracks.map((track, index) => `
+                <div class="track-item">
+                    <div class="track-header">
+                        <h4>Track ${track.number}</h4>
+                        <button class="btn-remove-track" onclick="removeTrackField(${index})">Remove</button>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Track Title</label>
+                            <input type="text" value="${track.title}" onchange="updateTrackField(${index}, 'title', this.value)" placeholder="e.g., Song Title" />
+                        </div>
+                        <div class="form-group">
+                            <label>Duration (seconds)</label>
+                            <input type="number" value="${track.duration}" onchange="updateTrackField(${index}, 'duration', this.value)" placeholder="e.g., 263" />
+                        </div>
+                    </div>
+                    <div class="form-row full">
+                        <div class="form-group">
+                            <label>Audio File Name (R2)</label>
+                            <input type="text" value="${track.audioFileName}" onchange="updateTrackField(${index}, 'audioFileName', this.value)" placeholder="e.g., Papa Eternel/track1.mp3" />
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('addTrackBtn').textContent = `+ Add Track (${currentTracks.length}/${MAX_TRACKS})`;
+        }
+
+        function updateTrackField(index, field, value) {
+            if (currentTracks[index]) {
+                currentTracks[index][field] = value;
+            }
+        }
+
+        // Load Data from Backend
+        async function loadData() {
+            await loadAlbums();
+            await loadVideos();
+        }
+
+        async function loadAlbums() {
+            try {
+                const response = await fetch(`${API_URL}/albums/list`);
+                if (!response.ok) throw new Error('Failed to load albums');
+                albums = await response.json();
+                renderAudio();
+            } catch (error) {
+                console.error('Error loading albums:', error);
+                showError('dashboardError', 'Failed to load albums from backend');
+                document.getElementById('audioList').innerHTML = '<div class="empty-state"><p>Error loading albums</p></div>';
+            }
+        }
+
+        async function loadVideos() {
+            try {
+                // TODO: Implement videos endpoint
+                videos = [];
+                renderVideos();
+            } catch (error) {
+                console.error('Error loading videos:', error);
+                document.getElementById('videoList').innerHTML = '<div class="empty-state"><p>Error loading videos</p></div>';
+            }
+        }
+
+        function renderAudio() {
+            const audioList = document.getElementById('audioList');
+
+            if (albums.length === 0) {
+                audioList.innerHTML = '<div class="empty-state"><p>No albums yet</p></div>';
+                return;
+            }
+
+            audioList.innerHTML = albums.map(album => `
+                <div class="item-card">
+                    <div class="item-header">
+                        <div class="item-info" style="flex: 1;">
+                            <div style="margin-bottom: 8px;">
+                                <span class="item-badge badge-audio">🎵 Audio</span>
+                                <span class="item-badge badge-album">📀 Album</span>
+                                ${album.isVisible ? '<span class="item-badge" style="background: #e8f5e9; color: #2e7d32;">👁️ Visible</span>' : '<span class="item-badge" style="background: #ffebee; color: #c62828;">🔒 Hidden</span>'}
+                            </div>
+                            <h4>${album.title}</h4>
+                            <p>Artist: ${album.artist}</p>
+                            <p>Year: ${album.year}</p>
+                            <p>ID: ${album.id}</p>
+                            <p>Lock Status: ${album.isLocked ? '🔒 Locked' : '🔓 Free'}</p>
+                        </div>
+                        <div class="item-actions" style="flex-direction: column;">
+                            <button class="btn btn-delete" onclick="deleteAlbum('${album.id}')">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderVideos() {
+            const videoList = document.getElementById('videoList');
+
+            if (videos.length === 0) {
+                videoList.innerHTML = '<div class="empty-state"><p>No videos yet</p></div>';
+                return;
+            }
+
+            videoList.innerHTML = videos.map(item => `
+                <div class="item-card">
+                    <div class="item-header">
+                        <div class="item-info" style="flex: 1;">
+                            <div style="margin-bottom: 8px;">
+                                <span class="item-badge badge-video">🎬 Video</span>
+                            </div>
+                            <h4>${item.title}</h4>
+                            <p>Artist: ${item.artist}</p>
+                            <p>Year: ${item.year}</p>
+                            <p>Lock Status: ${item.isLocked ? '🔒 Locked' : '🔓 Free'}</p>
+                        </div>
+                        <div class="item-actions" style="flex-direction: column;">
+                            <button class="btn btn-delete" onclick="deleteVideo('${item.id}')">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Create Album
+        async function createAlbum() {
+            const id = document.getElementById('albumId').value;
+            const title = document.getElementById('albumTitle').value;
+            const artist = document.getElementById('albumArtist').value;
+            const year = document.getElementById('albumYear').value;
+            const coverImageUrl = document.getElementById('albumCover').value;
+            const price = document.getElementById('albumPrice').value || 0;
+            const isLocked = document.getElementById('albumLocked').checked ? 1 : 0;
+
+            if (!id || !title || !artist || !year || !coverImageUrl) {
+                showError('dashboardError', 'Please fill in all album fields');
+                return;
+            }
+
+            if (currentTracks.length === 0) {
+                showError('dashboardError', 'Please add at least one track');
+                return;
+            }
+
+            const invalidTracks = currentTracks.filter(t => !t.title || !t.duration || !t.audioFileName);
+            if (invalidTracks.length > 0) {
+                showError('dashboardError', 'Please fill in all track fields');
+                return;
+            }
+
+            try {
+                // Create album
+                const albumResponse = await fetch(`${API_URL}/albums/create`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id,
+                        title,
+                        artist,
+                        year: parseInt(year),
+                        coverImageUrl,
+                        price: parseFloat(price),
+                        isLocked,
+                        isVisible: 1
+                    })
+                });
+
+                if (!albumResponse.ok) throw new Error('Failed to create album');
+
+                // Create songs
+                for (let i = 0; i < currentTracks.length; i++) {
+                    const track = currentTracks[i];
+                    await fetch(`${API_URL}/songs/create`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            id: `${id}_song_${i + 1}`,
+                            albumId: id,
+                            title: track.title,
+                            artist: artist,
+                            duration: parseInt(track.duration),
+                            audioFileName: track.audioFileName,
+                            trackNumber: i + 1
+                        })
+                    });
+                }
+
+                showSuccess('Album created successfully!');
+                await loadAlbums();
+
+                // Reset form
+                document.getElementById('albumId').value = '';
+                document.getElementById('albumTitle').value = '';
+                document.getElementById('albumArtist').value = '';
+                document.getElementById('albumYear').value = '';
+                document.getElementById('albumCover').value = '';
+                document.getElementById('audioType').value = '';
+                updateAudioForm();
+                currentTracks = [];
+            } catch (error) {
+                console.error('Error creating album:', error);
+                showError('dashboardError', 'Failed to create album: ' + error.message);
+            }
+        }
+
+        // Create Single Track
+        async function createSingleTrack() {
+            const id = document.getElementById('singleTrackId').value;
+            const title = document.getElementById('singleTrackTitle').value;
+            const artist = document.getElementById('singleTrackArtist').value;
+            const duration = document.getElementById('singleTrackDuration').value;
+            const audioFileName = document.getElementById('singleTrackAudioFile').value;
+            const price = document.getElementById('singleTrackPrice').value || 0;
+            const isLocked = document.getElementById('singleTrackLocked').checked ? 1 : 0;
+
+            if (!id || !title || !artist || !duration || !audioFileName) {
+                showError('dashboardError', 'Please fill in all fields');
+                return;
+            }
+
+            try {
+                // Create album first
+                const albumId = `album_${id}`;
+                await fetch(`${API_URL}/albums/create`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: albumId,
+                        title: title,
+                        artist: artist,
+                        year: new Date().getFullYear(),
+                        coverImageUrl: '',
+                        price: parseFloat(price),
+                        isLocked,
+                        isVisible: 1
+                    })
+                });
+
+                // Create song
+                await fetch(`${API_URL}/songs/create`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id,
+                        albumId,
+                        title,
+                        artist,
+                        duration: parseInt(duration),
+                        audioFileName,
+                        trackNumber: 1
+                    })
+                });
+
+                showSuccess('Track added successfully!');
+                await loadAlbums();
+
+                // Clear form
+                document.getElementById('singleTrackId').value = '';
+                document.getElementById('singleTrackTitle').value = '';
+                document.getElementById('singleTrackArtist').value = '';
+                document.getElementById('singleTrackDuration').value = '';
+                document.getElementById('singleTrackAudioFile').value = '';
+                document.getElementById('audioType').value = '';
+                updateAudioForm();
+            } catch (error) {
+                console.error('Error creating track:', error);
+                showError('dashboardError', 'Failed to create track: ' + error.message);
+            }
+        }
+
+        // Create Video
+        async function createVideo() {
+            const id = document.getElementById('videoId').value;
+            const title = document.getElementById('videoTitle').value;
+            const artist = document.getElementById('videoArtist').value;
+            const year = document.getElementById('videoYear').value;
+            const coverImageUrl = document.getElementById('videoCover').value;
+            const videoUrl = document.getElementById('videoUrl').value;
+            const price = document.getElementById('videoPrice').value || 0;
+            const isLocked = document.getElementById('videoLocked').checked ? 1 : 0;
+
+            if (!id || !title || !artist || !year || !coverImageUrl || !videoUrl) {
+                showError('dashboardError', 'Please fill in all fields');
+                return;
+            }
+
+            try {
+                // TODO: Implement video creation endpoint
+                showError('dashboardError', 'Videos endpoint not yet implemented');
+            } catch (error) {
+                console.error('Error creating video:', error);
+                showError('dashboardError', 'Failed to create video: ' + error.message);
+            }
+        }
+
+        // Delete
+        async function deleteAlbum(albumId) {
+            if (!confirm('Delete this album and all its tracks?')) return;
+
+            try {
+                const response = await fetch(`${API_URL}/albums/delete`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: albumId })
+                });
+
+                if (!response.ok) throw new Error('Failed to delete album');
+
+                showSuccess('Album deleted successfully!');
+                await loadAlbums();
+            } catch (error) {
+                console.error('Error deleting album:', error);
+                showError('dashboardError', 'Failed to delete album: ' + error.message);
+            }
+        }
+
+        function deleteVideo(id) {
+            if (!confirm('Delete this video?')) return;
+            videos = videos.filter(v => v.id !== id);
+            renderVideos();
+            showSuccess('Video deleted successfully!');
+        }
+
+        // Notifications
+        function showError(elementId, message) {
+            const errorDiv = document.getElementById(elementId);
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+            setTimeout(() => errorDiv.classList.remove('show'), 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.classList.add('show');
+            setTimeout(() => successDiv.classList.remove('show'), 3000);
+        }
+    </script>
+</body>
+</html>
