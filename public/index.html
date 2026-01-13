@@ -690,7 +690,7 @@
     <script>
         // Configuration
         const ADMIN_PASSWORD = 'king2024';
-        const API_URL = 'https://king-music-admin-api.onrender.com/api'; // Backend API
+        const API_URL = 'https://king-music-admin-api.onrender.com/api/trpc'; // Backend API (tRPC)
         const MAX_TRACKS = 12;
 
         // State
@@ -855,14 +855,13 @@
         async function loadAlbums() {
             try {
                 const response = await fetch(`${API_URL}/albums.list`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({})
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
                 });
                 if (!response.ok) throw new Error('Failed to load albums');
                 const data = await response.json();
-                // Extract albums from tRPC response format
-                albums = data.result?.data || data.data || data || [];
+                // Extract albums from tRPC response format: {result: {data: {json: [...]}}}
+                albums = data.result?.data?.json || data.result?.data || data.data || data || [];
                 renderAudio();
             } catch (error) {
                 console.error('Error loading albums:', error);
