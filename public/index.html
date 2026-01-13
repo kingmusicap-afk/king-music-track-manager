@@ -706,6 +706,8 @@
         });
 
         // Authentication
+        let authToken = null;
+        
         function handleLogin() {
             const password = document.getElementById('password').value;
             const errorDiv = document.getElementById('loginError');
@@ -717,7 +719,10 @@
 
             if (password === ADMIN_PASSWORD) {
                 isAuthenticated = true;
+                // Create a simple auth token from the password
+                authToken = btoa('admin:' + password); // Base64 encode
                 localStorage.setItem('trackManagerAuth', 'true');
+                localStorage.setItem('trackManagerToken', authToken);
                 showDashboard();
                 loadData();
                 errorDiv.classList.remove('show');
@@ -728,7 +733,9 @@
 
         function handleLogout() {
             isAuthenticated = false;
+            authToken = null;
             localStorage.removeItem('trackManagerAuth');
+            localStorage.removeItem('trackManagerToken');
             showLogin();
             document.getElementById('password').value = '';
         }
@@ -736,6 +743,7 @@
         function checkAuth() {
             if (localStorage.getItem('trackManagerAuth') === 'true') {
                 isAuthenticated = true;
+                authToken = localStorage.getItem('trackManagerToken');
                 showDashboard();
                 loadData();
             } else {
@@ -854,9 +862,13 @@
 
         async function loadAlbums() {
             try {
+                const headers = { 'Content-Type': 'application/json' };
+                if (authToken) {
+                    headers['Authorization'] = `Bearer ${authToken}`;
+                }
                 const response = await fetch(`${API_URL}/albums.list`, {
                     method: 'GET',
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: headers
                 });
                 if (!response.ok) throw new Error('Failed to load albums');
                 const data = await response.json();
@@ -968,9 +980,13 @@
 
             try {
                 // Create album using tRPC
+                const headers = { 'Content-Type': 'application/json' };
+                if (authToken) {
+                    headers['Authorization'] = `Bearer ${authToken}`;
+                }
                 const albumResponse = await fetch(`${API_URL}/albums.create`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: headers,
                     body: JSON.stringify({
                         id,
                         title,
@@ -1114,9 +1130,13 @@
             if (!confirm('Delete this album and all its tracks?')) return;
 
             try {
+                const headers = { 'Content-Type': 'application/json' };
+                if (authToken) {
+                    headers['Authorization'] = `Bearer ${authToken}`;
+                }
                 const response = await fetch(`${API_URL}/albums.delete`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: headers,
                     body: JSON.stringify({ id: albumId })
                 });
 
